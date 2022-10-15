@@ -63,7 +63,7 @@ const userSchema = new mongoose.Schema(
     },
     bio: String,
     website: String,
-    founded: Integer,
+    founded: Number,
     user_type: {
       type: String,
       enum: ['user', 'company'],
