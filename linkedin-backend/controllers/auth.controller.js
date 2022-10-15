@@ -34,6 +34,40 @@ const login = async (request, response) => {
   response.status(200).json({ message: 'Successfully logged in', data: token })
 }
 
+const signup = async (request, response) => {
+  const { name, email, password, role } = request.body
+  const errors = []
+  if (!name) errors.push({ name: 'Name is required' })
+  else if (name.length < 5)
+    errors.push({ name: 'Name should be at least 5 characters' })
+
+  if (!email) errors.push({ email: 'E-mail is required' })
+  else if (!validateEmail(email)) errors.push({ email: 'Email is not valid' })
+
+  if (!password) errors.push({ password: 'Password is required' })
+  else if (password.length < 5)
+    errors.push({ password: 'Password should be at least 5 characters' })
+
+  if (!role) errors.push({ role: 'Role is required' })
+
+  if (errors.length > 0) return response.status(404).json(errors)
+
+  try {
+    const user = new User()
+    user.name = name
+    user.email = email
+    user.password = await bcrypt.hash(password, 10)
+
+    await user.save()
+
+    response
+      .status(200)
+      .json({ message: 'Registered Successfully', data: user })
+  } catch (error) {
+    response.status(500).json({ message: error.message })
+  }
+}
+
 module.exports = {
   login,
   signup,
