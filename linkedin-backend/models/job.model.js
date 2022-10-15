@@ -11,17 +11,14 @@ const jobSchema = mongoose.Schema(
       required: true,
     },
     location: {
-      type: {
-        country: {
-          type: String,
-          required: true,
-        },
-        city: {
-          type: String,
-          required: true,
-        },
+      country: {
+        type: String,
+        required: true,
       },
-      required: true,
+      city: {
+        type: String,
+        required: true,
+      },
     },
     description: {
       type: String,
@@ -35,22 +32,16 @@ const jobSchema = mongoose.Schema(
       type: string,
       required: true,
     },
-    application_questions: [
-      {
-        question: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
-    Company_id: {
+    Company: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Company',
     },
-    applicant_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    },
+    applicants: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     timestamps: true,
