@@ -11,17 +11,14 @@ const companySchema = mongoose.Schema(
       required: true,
     },
     location: {
-      type: {
-        country: {
-          type: String,
-          required: true,
-        },
-        city: {
-          type: String,
-          required: true,
-        },
+      country: {
+        type: String,
+        required: true,
       },
-      required: true,
+      city: {
+        type: String,
+        required: true,
+      },
     },
     about: {
       type: String,
