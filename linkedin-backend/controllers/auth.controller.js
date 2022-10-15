@@ -7,6 +7,36 @@ const validateEmail = (email) => {
   return false
 }
 
+const validateData = async (data) => {
+  const errors = []
+  //check name existed in request
+  if (!data.name) errors.push({ name: 'Name is required' })
+  //check name is greater than 5 chars
+  else if (data.name.length < 5)
+    errors.push({ name: 'Name should be at least 5 characters' })
+
+  //get the user who have same email as that in request
+  const check_email = await User.findOne({ email: data.email })
+  //check email existed in request
+  if (!data.email) errors.push({ email: 'E-mail is required' })
+  //check if email is valid
+  else if (!validateEmail(data.email))
+    errors.push({ email: 'Email is not valid' })
+  //check if email existed in db
+  else if (check_email) errors.push({ email: 'Email already existed' })
+
+  //check password existed in request
+  if (!data.password) errors.push({ password: 'Password is required' })
+  //check password is greater than 5 chars
+  else if (data.password.length < 5)
+    errors.push({ password: 'Password should be at least 5 characters' })
+
+  //check role existed in request
+  if (!data.role) errors.push({ role: 'Role is required' })
+
+  return errors
+}
+
 const login = async (request, response) => {
   const { email, password } = request.body
 
@@ -35,41 +65,17 @@ const login = async (request, response) => {
 }
 
 const signup = async (request, response) => {
-  const { name, email, password, role } = request.body
-  const errors = []
-
-  //check name existed in request
-  if (!name) errors.push({ name: 'Name is required' })
-  //check name is greater than 5 chars
-  else if (name.length < 5)
-    errors.push({ name: 'Name should be at least 5 characters' })
-
-  //get the user who have same email as that in request
-  const check_email = await User.findOne({ email })
-  //check email existed in request
-  if (!email) errors.push({ email: 'E-mail is required' })
-  //check if email is valid
-  else if (!validateEmail(email)) errors.push({ email: 'Email is not valid' })
-  //check if email existed in db
-  else if (check_email) errors.push({ email: 'Email already existed' })
-
-  //check password existed in request
-  if (!password) errors.push({ password: 'Password is required' })
-  //check password is greater than 5 chars
-  else if (password.length < 5)
-    errors.push({ password: 'Password should be at least 5 characters' })
-
-  //check role existed in request
-  if (!role) errors.push({ role: 'Role is required' })
+  const data = request.body
+  const errors = await validateData(data)
 
   //return errors if existed
   if (errors.length > 0) return response.status(404).json(errors)
 
   try {
     const user = new User()
-    user.name = name
-    user.email = email
-    user.password = await bcrypt.hash(password, 10)
+    user.name = data.name
+    user.email = data.email
+    user.password = await bcrypt.hash(data.password, 10)
 
     await user.save()
 
