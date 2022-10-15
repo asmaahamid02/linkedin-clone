@@ -4,31 +4,22 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: 'Name is required',
+      required: true,
     },
     email: {
       type: String,
-      required: 'Email is required',
+      required: true,
       unique: true,
       trim: true,
     },
     password: {
       type: String,
-      required: 'Password is required',
+      required: true,
       select: false,
     },
-    location: {
-      type: {
-        country: {
-          type: String,
-          required: true,
-        },
-        city: {
-          type: String,
-          required: true,
-        },
-      },
-      required: true,
+    address: {
+      country: String,
+      city: String,
     },
     education: [
       {
@@ -40,24 +31,27 @@ const userSchema = new mongoose.Schema(
         start_date: Date,
         end_date: Date,
         description: String,
-        grade: Double,
+        grade: mongoose.Types.Decimal128,
       },
     ],
-    current_position: {
-      type: String,
-      reuired: 'Current position name is required',
-    },
-    headline: {
-      type: String,
-      required: true,
-    },
-    industry: {
-      type: String,
-      required: true,
-    },
+    experience: [
+      {
+        title: String,
+        employment_type: String,
+        company_name: String,
+        start_date: Date,
+        end_date: Date,
+        industry: String,
+      },
+    ],
+    skills: [String],
     phone_number: String,
     date_of_birth: Date,
-    visible: Boolean,
+    resume: String,
+    visible: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,
