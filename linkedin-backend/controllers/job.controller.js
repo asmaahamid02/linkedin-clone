@@ -17,10 +17,21 @@ const createJob = async (request, response) => {
     job.Company = user._id
 
     await job.save()
-    return response.json({ data: job, message: 'Job added successfully' })
+    return response
+      .status(200)
+      .json({ data: job, message: 'Job added successfully' })
   } catch (error) {
-    return response.json({ error: error.message })
+    return response.status(400).json({ error: error.message })
   }
 }
 
-module.exports = { createJob }
+const getJobs = async (request, response) => {
+  const company_id = request.user._id
+
+  const jobs = await Job.find({ Company: company_id })
+
+  if (!jobs) return response.status(400).json({ message: 'No jobs found' })
+  return response.status(200).json({ data: jobs })
+}
+
+module.exports = { createJob, getJobs }
