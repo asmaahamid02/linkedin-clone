@@ -52,23 +52,7 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    industry: {
-      type: String,
-      required: true,
-    },
-
-    about: {
-      type: String,
-      required: true,
-    },
     bio: String,
-    website: String,
-    founded: Number,
-    user_type: {
-      type: String,
-      enum: ['user', 'company'],
-      default: 'user',
-    },
   },
   {
     timestamps: true,
