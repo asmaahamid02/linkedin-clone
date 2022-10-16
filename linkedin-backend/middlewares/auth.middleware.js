@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/user.model')
+const Company = require('../models/company.model')
 
 const authMiddleware = async (request, response, next) => {
   const token = request.headers.authorization.split(' ')[1]
@@ -9,8 +10,13 @@ const authMiddleware = async (request, response, next) => {
 
   try {
     const decode_jwt = jwt.verify(token, process.env.JWT_SECRET_KEY)
-    const user = await User.findOne({ email: decode_jwt.email }).lean()
-    request.user = { ...user }
+
+    let user = await User.findOne({ email: decode_jwt.email }).lean()
+
+    if (decode_jwt.role == 'company')
+      user = await Company.findOne({ email: decode_jwt.email }).lean()
+
+    request.user = { ...user, role: decode_jwt.role }
     next()
   } catch (error) {
     return response.status(500).json({ message: error.message })
