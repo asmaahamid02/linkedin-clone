@@ -11,9 +11,25 @@ const updateProfile = async (request, response) => {
     User.findByIdAndUpdate(
       user._id,
       {
-        $set: {},
+        $set: {
+          name: data.name ? data.name : user.name,
+          address: {
+            country: data.country ? data.country : user.address.country,
+            city: data.city ? data.city : user.address.city,
+          },
+          phone_number: data.phone_number
+            ? data.phone_number
+            : user.phone_number,
+          date_of_birth: data.date_of_birth
+            ? data.date_of_birth
+            : user.date_of_birth,
+          bio: data.bio ? data.bio : user.bio,
+        },
+        $addToSet: {
+          skills: data.skills && data.skills,
+        },
       },
-      { upsert: true }
+      { new: true, upsert: true }
     )
       .then((result) =>
         response.json({ data: result, message: 'Profile Updated Successfully' })
