@@ -1,5 +1,6 @@
 const Job = require('../models/job.model')
 const Company = require('../models/company.model')
+const { request, response } = require('express')
 
 const createJob = async (request, response) => {
   const user = request.user
@@ -34,4 +35,12 @@ const getJobs = async (request, response) => {
   return response.status(200).json({ data: jobs })
 }
 
-module.exports = { createJob, getJobs }
+const getAppliedUsersByJob = async (request, response) => {
+  const job_id = request.params.id
+
+  const jobs = await Job.findById(job_id).populate('applicants')
+
+  if (!jobs) return response.status(400).json({ message: 'No jobs found' })
+  return response.status(200).json({ data: jobs })
+}
+module.exports = { createJob, getJobs, getAppliedUsersByJob }
