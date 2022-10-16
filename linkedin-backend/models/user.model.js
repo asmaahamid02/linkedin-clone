@@ -23,25 +23,14 @@ const userSchema = new mongoose.Schema(
     },
     education: [
       {
-        degree: String,
-        institute: {
-          type: String,
-          required: true,
-        },
-        start_date: Date,
-        end_date: Date,
-        description: String,
-        grade: mongoose.Types.Decimal128,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Education',
       },
     ],
     experience: [
       {
-        title: String,
-        employment_type: String,
-        company_name: String,
-        start_date: Date,
-        end_date: Date,
-        industry: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Experience',
       },
     ],
     skills: [String],
