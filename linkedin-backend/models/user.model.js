@@ -43,6 +43,12 @@ const userSchema = new mongoose.Schema(
     },
     bio: String,
     profile_image: String,
+    following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Company',
+      },
+    ],
   },
   {
     timestamps: true,
