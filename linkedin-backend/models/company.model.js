@@ -27,6 +27,12 @@ const companySchema = new mongoose.Schema(
     bio: String,
     website: String,
     founded: Number,
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     timestamps: true,
