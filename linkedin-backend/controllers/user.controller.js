@@ -1,5 +1,6 @@
 const User = require('../models/user.model')
 const Company = require('../models/company.model')
+const Job = require('../models/job.model')
 
 const updateProfile = async (request, response) => {
   const data = request.body
@@ -66,6 +67,32 @@ const updateProfile = async (request, response) => {
   //   return response.json({ data, user })
 }
 
+const applyForJob = async (request, response) => {
+  const user_id = request.user._id
+  const job_id = request.params.id
+
+  Job.findByIdAndUpdate(
+    job_id,
+    {
+      $addToSet: {
+        applicants: user_id,
+      },
+    },
+    {
+      new: true,
+      upsert: true,
+    }
+  )
+    .then((result) =>
+      response.json({
+        data: result,
+        message: 'Application sent Successfully',
+      })
+    )
+    .catch((error) => response.json(error))
+}
+
 module.exports = {
   updateProfile,
+  applyForJob,
 }
