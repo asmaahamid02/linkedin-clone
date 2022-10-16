@@ -9,6 +9,12 @@ const port = process.env.PORT
 const authRoutes = require('./routes/auth.routes')
 app.use('/auth', authRoutes)
 
+const userRoutes = require('./routes/user.routes')
+app.use('/users', userRoutes)
+
+const jobRoutes = require('./routes/job.routes')
+app.use('/jobs', jobRoutes)
+
 //creating the serevr
 app.listen(port, (error) => {
   if (error) console.log(error)
