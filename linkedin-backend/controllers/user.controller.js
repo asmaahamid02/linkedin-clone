@@ -75,7 +75,7 @@ const applyForJob = async (request, response) => {
   const user_id = request.user._id
   const job_id = request.params.id
 
-  Job.findByIdAndUpdate(
+  const job = await Job.findByIdAndUpdate(
     job_id,
     {
       $addToSet: {
@@ -84,11 +84,22 @@ const applyForJob = async (request, response) => {
     },
     { new: true, upsert: true }
   )
+
+  const user = await User.findByIdAndUpdate(
+    user_id,
+    {
+      $addToSet: {
+        jobs: job_id,
+      },
+    },
+    { new: true, upsert: true }
+  )
+
+  Promise.all([user, job])
     .then((result) =>
-      response.status(200).json({
-        data: result,
-        message: 'Application sent Successfully',
-      })
+      response
+        .status(200)
+        .json({ data: result, message: 'Application sent succesfully' })
     )
     .catch((error) => response.status(400).json({ error: error.message }))
 }
