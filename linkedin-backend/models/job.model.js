@@ -28,8 +28,8 @@ const jobSchema = mongoose.Schema(
       type: [String],
       required: true,
     },
-    work_time: {
-      type: string,
+    employment_time: {
+      type: String,
       required: true,
     },
     Company: {
