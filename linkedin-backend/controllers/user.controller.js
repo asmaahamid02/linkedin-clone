@@ -33,9 +33,11 @@ const updateProfile = async (request, response) => {
       { new: true, upsert: true }
     )
       .then((result) =>
-        response.json({ data: result, message: 'Profile Updated Successfully' })
+        response
+          .status(200)
+          .json({ data: result, message: 'Profile Updated Successfully' })
       )
-      .catch((error) => response.json(error))
+      .catch((error) => response.status(400).json({ error: error.message }))
   } else if (role == 'company') {
     //update company profile
     Company.findByIdAndUpdate(
@@ -60,9 +62,11 @@ const updateProfile = async (request, response) => {
       { new: true, upsert: true }
     )
       .then((result) =>
-        response.json({ data: result, message: 'Profile Updated Successfully' })
+        response
+          .status(200)
+          .json({ data: result, message: 'Profile Updated Successfully' })
       )
-      .catch((error) => response.json(error))
+      .catch((error) => response.status(400).json({ error: error.message }))
   }
   //   return response.json({ data, user })
 }
@@ -78,21 +82,50 @@ const applyForJob = async (request, response) => {
         applicants: user_id,
       },
     },
-    {
-      new: true,
-      upsert: true,
-    }
+    { new: true, upsert: true }
   )
     .then((result) =>
-      response.json({
+      response.status(200).json({
         data: result,
         message: 'Application sent Successfully',
       })
     )
-    .catch((error) => response.json(error))
+    .catch((error) => response.status(400).json({ error: error.message }))
+}
+
+const followCompany = async (request, response) => {
+  const user_id = request.user._id
+  const company_id = request.params.id
+
+  const user = User.findByIdAndUpdate(
+    user_id,
+    {
+      $addToSet: {
+        following: company_id,
+      },
+    },
+    { new: true, upsert: true }
+  )
+
+  const company = Company.findByIdAndUpdate(
+    user_id,
+    {
+      $addToSet: {
+        followers: user_id,
+      },
+    },
+    { new: true, upsert: true }
+  )
+
+  Promise.all([user, company])
+    .then((result) =>
+      response.status(200).json({ data: result, message: 'Followed' })
+    )
+    .catch((error) => response.status(400).json({ error: error.message }))
 }
 
 module.exports = {
   updateProfile,
   applyForJob,
+  followCompany,
 }
