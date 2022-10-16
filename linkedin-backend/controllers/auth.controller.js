@@ -1,4 +1,5 @@
 const User = require('../models/user.model')
+const Company = require('../models/company.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
@@ -15,15 +16,11 @@ const validateData = async (data) => {
   else if (data.name.length < 5)
     errors.push({ name: 'Name should be at least 5 characters' })
 
-  //get the user who have same email as that in request
-  const check_email = await User.findOne({ email: data.email })
   //check email existed in request
   if (!data.email) errors.push({ email: 'E-mail is required' })
   //check if email is valid
   else if (!validateEmail(data.email))
     errors.push({ email: 'Email is not valid' })
-  //check if email existed in db
-  else if (check_email) errors.push({ email: 'Email already existed' })
 
   //check password existed in request
   if (!data.password) errors.push({ password: 'Password is required' })
@@ -32,7 +29,19 @@ const validateData = async (data) => {
     errors.push({ password: 'Password should be at least 5 characters' })
 
   //check role existed in request
+  //1-user / 2-company
   if (!data.role) errors.push({ role: 'Role is required' })
+  else if (data.role != 'user' && data.role != 'company')
+    errors.push({ role: 'Role is not valid' })
+  else {
+    //get the user who have same email as that in request
+    let check_email = await User.findOne({ email: data.email })
+    if (data.role == 'company')
+      check_email = await Company.findOne({ email: data.email })
+
+    //check if email existed in db
+    if (check_email) errors.push({ email: 'Email already existed' })
+  }
 
   return errors
 }
@@ -72,7 +81,10 @@ const signup = async (request, response) => {
   if (errors.length > 0) return response.status(404).json(errors)
 
   try {
-    const user = new User()
+    let user = new User()
+
+    if (data.role == 'company') user = new Company()
+
     user.name = data.name
     user.email = data.email
     user.password = await bcrypt.hash(data.password, 10)
