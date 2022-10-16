@@ -35,12 +35,11 @@ const validateData = async (data) => {
     errors.push({ role: 'Role is not valid' })
   else {
     //get the user who have same email as that in request
-    let check_email = await User.findOne({ email: data.email })
-    if (data.role == 'company')
-      check_email = await Company.findOne({ email: data.email })
-
+    const check_user_email = await User.findOne({ email: data.email })
+    const check_company_email = await Company.findOne({ email: data.email })
     //check if email existed in db
-    if (check_email) errors.push({ email: 'Email already existed' })
+    if (check_user_email || check_company_email)
+      errors.push({ email: 'Email already existed' })
   }
 
   return errors
@@ -48,15 +47,20 @@ const validateData = async (data) => {
 
 const login = async (request, response) => {
   const { email, password } = request.body
-
+  let role = 'user'
   if (!email || !password)
     return response
       .status(404)
       .json({ message: 'Email and Password are required' })
-  const user = await User.findOne({ email }).select('+password')
+  let user = await User.findOne({ email }).select('+password')
 
-  if (!user)
-    return response.status(404).json({ message: 'Invalid Credentials' })
+  if (!user) {
+    user = await Company.findOne({ email }).select('+password')
+    role = 'company'
+
+    if (!user)
+      return response.status(404).json({ message: 'Invalid Credentials' })
+  }
 
   const isMatch = bcrypt.compare(password, user.password)
 
@@ -64,7 +68,7 @@ const login = async (request, response) => {
     return response.status(404).json({ message: 'Invalid Credentials' })
 
   const token = jwt.sign(
-    { email: user.email, name: user.name },
+    { email: user.email, name: user.name, role },
     process.env.JWT_SECRET_KEY,
     {
       expiresIn: '24h',
