@@ -22,14 +22,8 @@ const companySchema = new mongoose.Schema(
       city: String,
     },
     phone_number: String,
-    industry: {
-      type: String,
-      required: true,
-    },
-    about: {
-      type: String,
-      required: true,
-    },
+    industry: String,
+    about: String,
     bio: String,
     website: String,
     founded: Number,
@@ -41,4 +35,4 @@ const companySchema = new mongoose.Schema(
 
 const Company = mongoose.model('Company', companySchema)
 
-module.exports = User
+module.exports = Company
